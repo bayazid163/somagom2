@@ -75,11 +75,14 @@ REST_FRAMEWORK={
 
 
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     'corsheaders.middleware.CorsMiddleware',#new
     'django.middleware.common.CommonMiddleware',#new
 
 
-    'django.middleware.security.SecurityMiddleware',
+    
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -176,7 +179,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS=[os.path.join(BASE_DIR,'static'),] #new
-STATCIC_ROOT=os.path.join(BASE_DIR,'assets') #new
+STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles') #new
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 
 # Media Files
@@ -186,3 +191,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL='users.User' #new
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+LOGOUT_REDIRECT_URL = '/'
+ALLOWED_HOSTS = ["*"]
