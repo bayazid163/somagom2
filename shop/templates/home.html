@@ -1,0 +1,395 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somagom | Heritage at your doorstep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Public+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --heritage-red: #A33B26;
+            --clay-white: #F9F7F2; 
+            --ink-black: #2A2420;  
+        }
+        body { 
+            font-family: 'Public Sans', sans-serif; 
+            background-color: var(--clay-white); 
+            color: var(--ink-black); 
+            background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');
+        }
+        .serif { font-family: 'Marcellus', serif; }
+        .brand-color { color: var(--heritage-red); }
+        .brand-bg { background-color: var(--heritage-red); }
+        
+        .logo-box {
+            border: 2px solid var(--heritage-red);
+            padding: 4px 12px;
+            display: inline-block;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .hero-section {
+            height: 85vh;
+            background: linear-gradient(rgba(42, 36, 32, 0.7), rgba(42, 36, 32, 0.5)), 
+                        url('{% static 'Images/artistic_hand.jpg'%}'); 
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        #mobile-menu {
+            display: none;
+            transition: all 0.3s ease;
+        }
+        #mobile-menu.active {
+            display: flex;
+        }
+
+        .traditional-card {
+            background: #ffffff;
+            border: 1px solid rgba(163, 59, 38, 0.15);
+            transition: all 0.4s ease;
+        }
+        .traditional-card:hover {
+            border-color: var(--heritage-red);
+            transform: translateY(-5px);
+        }
+        .glass-card {
+            background: rgba(249, 247, 242, 0.85);
+            border: 1px solid rgba(163, 59, 38, 0.25);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mobile-menu" class="fixed inset-0 z-[100] bg-[#F9F7F2] p-10 flex flex-col space-y-8 text-2xl serif">
+        <button id="close-menu" class="absolute top-8 right-10 text-stone-500 text-4xl">✕</button>
+        
+        <a href="{% url ''%}" class="brand-color">Home</a>
+        <a href="{% url 'fashion'%}">Fashion</a>
+        <a href="{% url 'food'%}" >GI Food</a>
+        <a href="{%url 'craft'%}">Crafts</a>
+        <a href="{%url 'about'%}">Our Story</a>
+        <hr class="border-stone-200">
+        {% if user.is_authenticated %}
+            <button type="button" onclick="confirmLogout()" class="text-left text-sm uppercase tracking-widest font-bold text-red-600">
+                Logout ({{ user.username }})
+            </button>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-sm uppercase tracking-widest font-bold">Login / Account</a>
+        {% endif %}
+    </div>
+
+    <nav class="flex justify-between items-center px-6 md:px-10 py-6 sticky top-0 z-50 bg-[#F9F7F2]/95 backdrop-blur-md border-b border-stone-200">
+        <div class="logo-box brand-color">
+            <div class="text-xl serif tracking-tighter">SOMAGOM</div>
+        </div>
+        
+        <div class="hidden md:flex space-x-8 text-[11px] uppercase tracking-widest font-bold text-stone-500">
+        
+            <a href="{%url ''%}" class="brand-color">Home</a>
+            <a href="{% url 'fashion'%}"  class="hover:brand-color transition">Fashion</a>
+            <a href="{% url 'food'%}"  class="hover:brand-color transition">GI Food</a>
+            <a href="{%url 'craft'%}" class="hover:brand-color transition">Crafts</a>
+            <a href="{%url 'about'%}" class="hover:brand-color transition">Our Story</a>
+        </div>
+        <div class="flex items-center space-x-3">
+
+            <a href="{% url 'cart' %}" class="relative inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {{ cart.items.count|default:0 }}
+                </span>
+            </a>
+        </div>
+
+        <div class="flex items-center space-x-4">
+        {% if user.is_authenticated %}
+            <form action="{% url 'rest_logout' %}" method="post" class="inline">
+                {% csrf_token %}
+                <button type="button" onclick="confirmLogout()" class="text-xs uppercase font-bold text-stone-500">
+                    Logout
+                </button>
+            </form>
+        
+            <span class="text-[10px] uppercase tracking-widest font-bold brand-color">
+                Hi, {{ user.username }}
+            </span>
+        {% else %}
+                <a href="{% url 'login'%}" class="hidden md:block brand-bg px-6 py-2 text-xs uppercase font-bold text-white hover:opacity-90 transition">Login</a>
+                <button id="open-menu" class="md:hidden text-stone-800 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+        {% endif %}
+        </div>
+    </nav>
+
+    <section class="hero-section px-6">
+        <div class="max-w-4xl">
+            <h1 class="text-5xl md:text-8xl serif leading-tight mb-6">HERITAGE <br> <span class="italic font-light opacity-90 text-[#C5A059]">AND TRADITION</span></h1>
+            <p class="max-w-xl mx-auto text-stone-200 text-sm md:text-base mb-10 uppercase tracking-[0.2em] leading-relaxed">
+                ঐতিহ্য এখন আপনার ঘরের দুয়ারে <br>
+                Empowering the roots of Bangladesh through authentic commerce.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-6">
+                <a href="{% url 'fashion'%}" class="brand-bg text-white px-10 py-4 text-xs uppercase font-bold tracking-widest hover:opacity-90 transition shadow-xl">Explore Collection</a>
+                <a href="{% url 'about'%}" class="bg-white/10 backdrop-blur-md border border-white/30 text-white px-10 py-4 text-xs uppercase font-bold tracking-widest hover:bg-white hover:text-black transition">Our Legacy</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 px-10 py-20">
+        <div class="glass-card p-8 group hover:border-[var(--heritage-red)] transition duration-500">
+            <h3 class="text-xs tracking-widest text-gray-600 mb-4 uppercase">Authenticity</h3>
+            <p class="text-sm text-gray-700 mb-6">
+                Every product is verified with mandatory GI documentation and lab tests for food categories.
+            </p>
+            <span class="text-[10px] uppercase tracking-widest group-hover:text-[var(--heritage-red)]">
+                Explore Paperwork ↗
+            </span>
+        </div>
+
+        <div class="glass-card p-8 group hover:border-[var(--heritage-red)] transition duration-500">
+            <h3 class="text-xs tracking-widest text-gray-600 mb-4 uppercase">Direct Source</h3>
+            <p class="text-sm text-gray-700 mb-6">
+                Eliminating the middleman. We connect you directly to the looms and workshops of Bangladesh.
+            </p>
+            <span class="text-[10px] uppercase tracking-widest group-hover:text-[var(--heritage-red)]">
+                Meet Producers ↗
+            </span>
+        </div>
+
+        <div class="glass-card p-8 group hover:border-[var(--heritage-red)] transition duration-500">
+            <h3 class="text-xs tracking-widest text-gray-600 mb-4 uppercase">Heritage</h3>
+            <p class="text-sm text-gray-700 mb-6">
+                From Jamdani to Rajshahi Silk, we curate items that reflect the soul of our nation.
+            </p>
+            <span class="text-[10px] uppercase tracking-widest group-hover:text-[var(--heritage-red)]">
+                View Gallery ↗
+            </span>
+        </div>
+
+        <div class="glass-card p-8 group hover:border-[var(--heritage-red)] transition duration-500">
+            <h3 class="text-xs tracking-widest text-gray-600 mb-4 uppercase">Global Reach</h3>
+            <p class="text-sm text-gray-700 mb-6">
+                Bringing the heritage of Bengal to the 7.5 million expatriates living worldwide.
+            </p>
+            <span class="text-[10px] uppercase tracking-widest group-hover:text-[var(--heritage-red)]">
+                Shipping Info ↗
+            </span>
+        </div>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-0 border-b border-stone-200 bg-white">
+        <div class="p-10 border-r border-stone-100 flex flex-col items-center text-center">
+            <div class="w-10 h-10 brand-color mb-4"><i data-lucide="shield-check"></i></div>
+            <h3 class="serif text-lg mb-2">GI Verified</h3>
+            <p class="text-[10px] text-stone-500 uppercase tracking-wider">Certified Authenticity</p>
+        </div>
+        <div class="p-10 border-r border-stone-100 flex flex-col items-center text-center">
+            <div class="w-10 h-10 brand-color mb-4"><i data-lucide="map-pin"></i></div>
+            <h3 class="serif text-lg mb-2">Direct Source</h3>
+            <p class="text-[10px] text-stone-500 uppercase tracking-wider">Village to Doorstep</p>
+        </div>
+        <div class="p-10 border-r border-stone-100 flex flex-col items-center text-center">
+            <div class="w-10 h-10 brand-color mb-4"><i data-lucide="truck"></i></div>
+            <h3 class="serif text-lg mb-2">Fast Shipping</h3>
+            <p class="text-[10px] text-stone-500 uppercase tracking-wider">Global Logistics</p>
+        </div>
+        <div class="p-10 flex flex-col items-center text-center">
+            <div class="w-10 h-10 brand-color mb-4"><i data-lucide="users"></i></div>
+            <h3 class="serif text-lg mb-2">Artisan First</h3>
+            <p class="text-[10px] text-stone-500 uppercase tracking-wider">Supporting 100+ Families</p>
+        </div>
+    </section>
+
+    <section id="fashion" class="px-10 py-16">
+        <h2 class="text-3xl serif mb-10 border-b border-stone-200 pb-4">Heritage <span class="brand-color">Fashion</span></h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="traditional-card p-4">
+                <img src="{%static 'Images/tangail_sareee.jpg'%}" class="w-full h-64 object-cover mb-4 grayscale hover:grayscale-0 transition duration-500">
+                <h3 class="serif text-xl">Tangail Jamdani</h3>
+                <p class="text-xs text-stone-500 uppercase tracking-widest">GI Certified Wear</p>
+            </div>
+            <div class="traditional-card p-4">
+                <img src="{% static 'Images/rajshahi_silk_saree.png'%}" class="w-full h-64 object-cover mb-4 grayscale hover:grayscale-0 transition duration-500">
+                <h3 class="serif text-xl">Rajshahi Silk</h3>
+                <p class="text-xs text-stone-500 uppercase tracking-widest">Pure Mulberry Silk</p>
+            </div>
+            <div class="traditional-card p-4">
+                <img src="{%static 'Images/khadi_panjabi.png'%}" class="w-full h-64 object-cover mb-4 grayscale hover:grayscale-0 transition duration-500">
+                <h3 class="serif text-xl">Cumilla Khadi</h3>
+                <p class="text-xs text-stone-500 uppercase tracking-widest">Hand-spun Cotton</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="food" class="px-10 py-16 bg-stone-100/50">
+        <h2 class="text-3xl serif mb-10 border-b border-stone-200 pb-4">Traditional <span class="brand-color">GI Food</span></h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="traditional-card group">
+                <div class="h-48 overflow-hidden">
+                    <img src="{% static 'Images/cumilla_roshmalai.png'%}" alt="Cumilla Roshmalai" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+                <div class="p-6 text-center">
+                    <h3 class="serif text-xl">Cumilla Roshmalai</h3>
+                    <p class="text-sm text-stone-600 mt-2 italic">Pure milk-based heritage dessert</p>
+                </div>
+            </div>
+            <div class="traditional-card group">
+                <div class="h-48 overflow-hidden">
+                    <img src="{% static 'Images/tangail_chomchom.jpg'%}" alt="Tangail Chomchom" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+                <div class="p-6 text-center">
+                    <h3 class="serif text-xl">Tangail Chomchom</h3>
+                    <p class="text-sm text-stone-600 mt-2 italic">The King of Sweets from Porabari</p>
+                </div>
+            </div>
+            <div class="traditional-card group">
+                <div class="h-48 overflow-hidden">
+                    <img src="{% static 'Images/Patishapta.png'%}" alt="Patisapta Pitha" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+                <div class="p-6 text-center">
+                    <h3 class="serif text-xl">Patisapta Pitha</h3>
+                    <p class="text-sm text-stone-600 mt-2 italic">Thin rice-flour crepes rolled with luscious Kheer filling.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="craft" class="px-10 py-16">
+        <h2 class="text-3xl serif mb-10 border-b border-stone-200 pb-4">Exquisite <span class="brand-color">Crafts</span></h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="traditional-card flex flex-col md:flex-row items-center">
+                <img src="{%static 'Images/shataranji.png'%}" class="w-full md:w-48 h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="serif text-2xl">Jessore Sotoronji</h3>
+                    <p class="text-sm text-stone-600 mt-2">Authentic hand-tufted floor mats and rugs from the heart of Jessore.</p>
+                </div>
+            </div>
+            <div class="traditional-card flex flex-col md:flex-row items-center">
+                <img src="{% static 'Images/nakshi_katha.jpg'%}" class="w-full md:w-48 h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="serif text-2xl">Nakshi Kantha</h3>
+                    <p class="text-sm text-stone-600 mt-2">Intricate hand-stitched embroidery depicting the folklore of rural Bengal.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="flex flex-wrap justify-between px-10 py-16 border-y border-[rgba(163,59,38,0.25)]">
+        <div class="w-1/2 md:w-1/4 mb-8 md:mb-0">
+            <p class="text-gray-600 text-xs uppercase tracking-widest mb-1">Producers</p>
+            <h2 class="text-4xl serif">100+</h2>
+        </div>
+
+        <div class="w-1/2 md:w-1/4 mb-8 md:mb-0">
+            <p class="text-gray-600 text-xs uppercase tracking-widest mb-1">Products</p>
+            <h2 class="text-4xl serif">2,000+</h2>
+        </div>
+
+        <div class="w-1/2 md:w-1/4">
+            <p class="text-gray-600 text-xs uppercase tracking-widest mb-1">Middlemen Cut</p>
+            <h2 class="text-4xl serif brand-color">0%</h2>
+        </div>
+
+        <div class="w-1/2 md:w-1/4">
+            <p class="text-gray-600 text-xs uppercase tracking-widest mb-1">Tradition</p>
+            <h2 class="text-4xl serif">Infinite</h2>
+        </div>
+    </section>
+
+    
+
+
+    
+    <section id="about" class="grid grid-cols-1 md:grid-cols-2 gap-0 py-20 px-10">
+        <div class="glass-card p-12 flex flex-col justify-center">
+            <h4 class="brand-color text-xs uppercase tracking-widest mb-6">About Somagom</h4>
+            <h2 class="text-4xl serif mb-6 leading-snug">
+                Where Tradition Meets <br> Modern Trust
+            </h2>
+            <p class="text-gray-700 text-sm leading-relaxed mb-6">
+                Somagom is a digital platform that directly connects Bangladeshi producers of Geographical
+                Indication (GI) and heritage products with national and international consumers.
+            </p>
+            <button class="border border-[rgba(163,59,38,0.4)] w-max px-8 py-3 text-[10px]
+                           uppercase tracking-widest hover:bg-[var(--heritage-red)]
+                           hover:text-white transition">
+                Our Full Story
+            </button>
+        </div>
+
+        <div class="bg-zinc-200 h-96 md:h-auto relative overflow-hidden">
+            <img src="{% static 'Images/home_story.jpg'%}"
+                 alt="Artisanship"
+                 class="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition duration-1000">
+        </div>
+    </section>
+
+
+<footer class="bg-stone-900 text-white py-16 px-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div>
+                <div class="logo-box border-white text-white mb-6 uppercase tracking-tighter serif">SOMAGOM</div>
+                <p class="text-xs text-stone-400 leading-relaxed uppercase tracking-widest">Preserving heritage through equitable commerce.</p>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Collection</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                    <li><a href="{% url 'food'%}" class="hover:text-white transition">Heritage Food</a></li>
+                    <li><a href="{%url 'fashion'%}" class="hover:text-white transition">Fashion Hub</a></li>
+                    <li><a href="{%url 'craft'%}" class="hover:text-white transition">GI Crafts</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Support</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                    <li>Authenticity Policy</li>
+                    <li>Shipping Info</li>
+                    <li>Producer Sign-up</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Newsletter</h4>
+                <input type="email" placeholder="YOUR EMAIL" class="bg-transparent border-b border-stone-700 w-full py-2 text-[10px] focus:outline-none">
+            </div>
+        </div>
+        <div class="pt-12 border-t border-stone-800 text-center">
+            <p class="text-[9px] uppercase tracking-[0.5em] text-stone-500">© 2025 SOMAGOM — AUTHENTICITY GUARANTEED</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+        
+        const openBtn = document.getElementById('open-menu');
+        const closeBtn = document.getElementById('close-menu');
+        const menu = document.getElementById('mobile-menu');
+
+        openBtn.addEventListener('click', () => {
+            menu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            menu.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+    </script>
+</body>
+</html>

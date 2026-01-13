@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somagom | Register</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #fcf8f7; font-family: 'Inter', sans-serif; padding: 40px 20px; }
+    .background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url("Images/map.png"); background-size: cover; background-position: center; opacity: 0.15; z-index: -1; }
+    .auth-card { background: white; width: 100%; max-width: 500px; padding: 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(163, 59, 38, 0.08); border: 1px solid rgba(163, 59, 38, 0.1); }
+    .brand-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+    .brand-logo img { width: 45px; height: auto; }
+    .brand-logo h1 { font-family: 'Great Vibes', cursive; color: #A33B26; font-size: 38px; font-weight: 400; line-height: 1; }
+    .auth-card h2 { font-family: 'Great Vibes', cursive; font-size: 32px; color: #333; text-align: center; margin-bottom: 5px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .input-group { position: relative; margin-bottom: 22px; }
+    .input-group label { position: absolute; top: -9px; left: 15px; background: white; padding: 0 8px; font-size: 11px; font-weight: 600; color: #A33B26; text-transform: uppercase; z-index: 1; }
+    .input-group input, .input-group select { width: 100%; padding: 14px 15px 14px 45px; border: 1.2px solid #e0c8c4; border-radius: 12px; outline: none; font-size: 14px; background: transparent; }
+    .input-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #A33B26; }
+    #producerFields { display: none; border-left: 3px solid #A33B26; padding-left: 15px; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .file-input-label { font-size: 12px; color: #666; margin-bottom: 5px; display: block; }
+    .btn-register { width: 100%; padding: 16px; background: #A33B26; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 15px; margin-top: 10px; transition: 0.3s; }
+    .btn-register:disabled { background: #ccc; cursor: not-allowed; }
+    .switch-text { text-align: center; font-size: 13px; color: #777; margin-top: 20px; }
+    .switch-text a { color: #A33B26; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="background"></div>
+
+  <div class="auth-card">
+    <div class="brand-logo">
+      <img src="{%static 'Images/logo.png'%}" alt="Logo">
+      <h1>Somagom</h1>
+    </div>
+
+    <h2>Join Us</h2>
+    <p class="subtitle">Create your account</p>
+
+    <form id="registrationForm" method="POST">
+      {% csrf_token %}
+      
+      <div class="input-group">
+        <label>Username</label>
+        <i class="fa-regular fa-user"></i>
+        <input type="text" id="username" placeholder="username" required>
+      </div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <i class="fa-regular fa-envelope"></i>
+        <input type="email" id="email" placeholder="email@example.com" required>
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password1" placeholder="••••••••••••" required>
+      </div>
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password2" placeholder="••••••••••••" required>
+      </div>
+
+
+      <div class="input-group">
+        <label>Register As</label>
+        <i class="fa-solid fa-user-tag"></i>
+        <select id="roleSelect" required onchange="toggleProducerFields()">
+          <option value="customer">Customer</option>
+          <option value="producer">Producer</option>
+        </select>
+      </div>
+
+      <div id="producerFields">
+        <div class="input-group">
+          <label>Business Name</label>
+          <i class="fa-solid fa-shop"></i>
+          <input type="text" id="businessName" placeholder="e.g. Jamdani Crafts">
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-register">CREATE ACCOUNT</button>
+    </form>
+
+    <p class="switch-text">
+      Already have an account? <a href="{%url 'login'%}">Login Now</a>
+    </p>
+  </div>
+
+  <script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');//new
+    const API_URL = "http://127.0.0.1:8000/api/v1/dj-rest-auth/registration/";
+
+    function toggleProducerFields() {
+      const role = document.getElementById('roleSelect').value;
+      const producerSection = document.getElementById('producerFields');
+      producerSection.style.display = (role === 'producer') ? 'block' : 'none';
+    }
+
+    document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Processing...";
+
+    
+      const payload = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password1: document.getElementById('password1').value,
+        password2: document.getElementById('password2').value, 
+
+        role: document.getElementById('roleSelect').value
+      };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json",
+            'X-CSRFToken': csrftoken //new
+           },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Registration Successful! Please Login.");
+          window.location.href = "{%url 'login'%}"; 
+        } else {
+        
+          alert("Error: " + JSON.stringify(data));
+        }
+      } catch (error) {
+        alert("Server connection failed!");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "CREATE ACCOUNT";
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somagom | Login</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #fcf8f7; font-family: 'Inter', sans-serif; padding: 20px; }
+    .background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url("Images/map.png"); background-size: cover; background-position: center; opacity: 0.15; z-index: -1; }
+    .auth-card { background: white; width: 100%; max-width: 450px; padding: 50px 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(163, 59, 38, 0.08); border: 1px solid rgba(163, 59, 38, 0.1); }
+    .brand-logo { display: flex; align-items: center; justify-content: center; gap: 1px; margin-bottom: 10px; }
+    .brand-logo img { width: 50px; height: auto; }
+    .brand-logo h1 { font-family: 'Great Vibes', cursive; color: #A33B26; font-size: 42px; font-weight: 400; line-height: 1; }
+    .auth-card h2 { font-family: 'Great Vibes', cursive; font-size: 34px; color: #333; text-align: center; margin-bottom: 5px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 35px; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .input-group { position: relative; margin-bottom: 25px; }
+    .input-group label { position: absolute; top: -9px; left: 15px; background: white; padding: 0 8px; font-size: 11px; font-weight: 600; color: #A33B26; text-transform: uppercase; letter-spacing: 1px; z-index: 1; }
+    .input-group input, .input-group select { width: 100%; padding: 16px 15px 16px 48px; border: 1.2px solid #e0c8c4; border-radius: 12px; outline: none; font-size: 14px; transition: all 0.3s ease; background: transparent; }
+    .input-group input:focus { border-color: #A33B26; box-shadow: 0 0 0 3px rgba(163, 59, 38, 0.05); }
+    .input-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #A33B26; font-size: 16px; }
+    .forgot-pass { display: block; text-align: right; font-size: 12px; color: #999; text-decoration: none; margin-top: -15px; margin-bottom: 25px; }
+    .btn-login { width: 100%; padding: 16px; background: #A33B26; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 15px; letter-spacing: 1px; transition: 0.3s; }
+    .btn-login:disabled { background: #888; }
+    .divider { display: flex; align-items: center; text-align: center; margin: 25px 0; color: #ddd; }
+    .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #f0f0f0; }
+    .divider span { padding: 0 10px; font-size: 11px; color: #bbb; font-weight: 600; }
+    .social-icons { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
+    .social-btn { flex: 1; height: 48px; border: 1px solid #f0f0f0; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; background: #fff; transition: 0.2s; }
+    .switch-text { text-align: center; font-size: 13px; color: #777; }
+    .switch-text a { color: #A33B26; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="background"></div>
+
+  <div class="auth-card">
+    <div class="brand-logo">
+      <img src="{%static 'Images/logo.png'%}" alt="Logo">
+      <h1>Somagom</h1>
+    </div>
+
+    <h2>Welcome</h2>
+    <p class="subtitle">Secure Login</p>
+
+    <form id="loginForm" method="POST">
+      {% csrf_token %}
+      <div class="input-group">
+        <label>Email Address</label>
+        <i class="fa-regular fa-envelope"></i>
+        <input type="email" id="email" placeholder="email@example.com" required>
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password" placeholder="••••••••••••" required>
+      </div>
+
+      <div class="input-group">
+        <label>Role</label>
+        <i class="fa-solid fa-user-tag"></i>
+        <select id="roleSelect" required style="padding-left: 48px;">
+          <option value="customer">Customer</option>
+          <option value="seller">Seller</option>
+        </select>
+      </div>
+
+      <a href="#" class="forgot-pass">Forgot password?</a>
+
+      <button type="submit" id="loginBtn" class="btn-login">SIGN IN</button>
+    </form>
+
+    <div class="divider"><span>OR CONTINUE WITH</span></div>
+
+    <div class="social-icons">
+      <div class="social-btn"><i class="fab fa-google" style="color: #DB4437;"></i></div>
+      <div class="social-btn"><i class="fab fa-facebook-f" style="color: #4267B2;"></i></div>
+    </div>
+
+    <p class="switch-text">
+      New here? <a href="{%url 'registration'%}">Create an Account</a>
+    </p>
+  </div>
+
+  <script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken'); //new
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      loginBtn.disabled = true;
+      loginBtn.innerText = "Authenticating...";
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/v1/dj-rest-auth/login/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          
+          localStorage.setItem('token', data.key || data.access); 
+          alert('Login Successful!');
+          
+          
+          const role = document.getElementById('roleSelect').value;
+          window.location.href = role === 'seller' ? 'seller_dashboard.html' : "{%url ''%}";
+        } else {
+          alert('Login Failed: ' + (data.non_field_errors || 'Invalid Credentials'));
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Server connection failed!');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = "SIGN IN";
+      }
+    });
+  </script>
+</body>
+</html>

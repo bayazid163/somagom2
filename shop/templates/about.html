@@ -1,0 +1,347 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story | Somagom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Public+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --heritage-red: #A33B26;
+            --clay-white: #F9F7F2;
+            --ink-black: #2A2420;
+            --muted-gold: #C5A059;
+        }
+        body { 
+            font-family: 'Public Sans', sans-serif; 
+            background-color: var(--clay-white); 
+            color: var(--ink-black); 
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+        .serif { font-family: 'Marcellus', serif; }
+        .brand-color { color: var(--heritage-red); }
+        .brand-bg { background-color: var(--heritage-red); }
+
+        .logo-box {
+            border: 2px solid var(--heritage-red);
+            padding: 4px 12px;
+            display: inline-block;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        
+        .heritage-cream-bg { background-color: #F2EBE1; }
+        .border-brand { border-color: rgba(163, 59, 38, 0.2); }
+
+        .story-image {
+            filter: sepia(15%);
+            box-shadow: 20px 20px 0px rgba(163, 59, 38, 0.05);
+        }
+
+        .philosophy-card {
+            background: white;
+            border: 1px solid rgba(163, 59, 38, 0.1);
+            padding: 40px;
+            transition: transform 0.3s ease;
+        }
+        .philosophy-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--heritage-red);
+        }
+        #mobile-menu {
+            display: none;
+            transition: all 0.3s ease;
+        }
+        #mobile-menu.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div id="mobile-menu" class="fixed inset-0 z-[100] bg-[#F9F7F2] p-10 flex flex-col space-y-8 text-2xl serif">
+        <button id="close-menu" class="absolute top-8 right-10 text-stone-500 text-4xl">✕</button>
+        
+        <a href="{% url ''%}">Home</a>
+        <a href="{% url 'fashion'%}">Fashion</a>
+        <a href="{% url 'food'%}" >GI Food</a>
+        <a href="{%url 'craft'%}">Crafts</a>
+        <a href="{%url 'about'%}" class="brand-color">Our Story</a>
+        <hr class="border-stone-200">
+        {% if user.is_authenticated %}
+            <button type="button" onclick="confirmLogout()" class="text-left text-sm uppercase tracking-widest font-bold text-red-600">
+                Logout ({{ user.username }})
+            </button>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-sm uppercase tracking-widest font-bold">Login / Account</a>
+        {% endif %}
+    </div>
+
+    <nav class="flex justify-between items-center px-6 md:px-10 py-6 sticky top-0 z-50 bg-[#F9F7F2]/95 backdrop-blur-md border-b border-stone-200">
+        <div class="logo-box brand-color">
+            <div class="text-xl serif tracking-tighter">SOMAGOM</div>
+        </div>
+        
+        <div class="hidden md:flex space-x-8 text-[11px] uppercase tracking-widest font-bold text-stone-500">
+        
+            <a href="{%url ''%}" >Home</a>
+            <a href="{% url 'fashion'%}" class="hover:brand-color transition">Fashion</a>
+            <a href="{% url 'food'%}"  class="hover:brand-color transition">GI Food</a>
+            <a href="{%url 'craft'%}" class="hover:brand-color transition">Crafts</a>
+            <a href="{%url 'about'%}" class="brand-color" class="hover:brand-color transition">Our Story</a>
+        </div>
+        <div class="flex items-center space-x-3">
+
+            <a href="{% url 'cart' %}" class="relative inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {{ cart.items.count|default:0 }}
+                </span>
+            </a>
+        </div>
+
+        <div class="flex items-center space-x-4">
+        {% if user.is_authenticated %}
+            <form action="{% url 'rest_logout' %}" method="post" class="inline">
+                {% csrf_token %}
+                <button type="button" onclick="confirmLogout()" class="text-xs uppercase font-bold text-stone-500">
+                    Logout
+                </button>
+            </form>
+        
+            <span class="text-[10px] uppercase tracking-widest font-bold brand-color">
+                Hi, {{ user.username }}
+            </span>
+        {% else %}
+                <a href="{% url 'login'%}" class="hidden md:block brand-bg px-6 py-2 text-xs uppercase font-bold text-white hover:opacity-90 transition">Login</a>
+                <button id="open-menu" class="md:hidden text-stone-800 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+        {% endif %}
+        </div>
+    </nav>
+
+    <section class="px-10 py-24 text-center max-w-5xl mx-auto">
+        <span class="brand-color text-[10px] uppercase tracking-[0.5em] mb-4 block font-bold">Heritage Preservation Network</span>
+        <h1 class="text-5xl md:text-8xl serif mb-10 leading-tight">Authenticity is our <span class="italic font-light">Ancestry.</span></h1>
+        <div class="w-20 h-1 brand-bg mx-auto mb-10"></div>
+        <p class="text-xl text-stone-600 leading-relaxed font-light max-w-3xl mx-auto">
+            Somagom isn't just a marketplace; it is a movement. We exist to protect the <span class="brand-color font-semibold">Geographical Indication (GI)</span> status of Bangladesh's most iconic treasures—from the mist-soaked looms of Sonargaon to the clay-rich kitchens of Bogura.
+        </p>
+    </section>
+
+    <section class="px-10 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center border-t border-stone-200">
+        <div>
+            <h2 class="text-4xl serif mb-8">Beyond the Label</h2>
+            <div class="space-y-6 text-stone-600 text-sm leading-loose">
+                <p>
+                    Every product on this platform carries a story that spans centuries. When you hold a **Dhakai Jamdani**, you aren't just holding fabric; you are holding a weaving tradition that survived the colonial era and the test of time. 
+                </p>
+                <p>
+                    We realized that in the modern market, "Handmade" had become a marketing buzzword. True artisans were being overshadowed by mass-produced copies that lacked the soul and the specific regional quality of the original. **Somagom was founded in 2024** to solve this—to create a digital sanctuary where the provenance of every item is verified and the lineage of every weaver is respected.
+                </p>
+                <p>
+                    Our team travels to the remote corners of Bangladesh—the Hilsa hubs of Chandpur, the silk villages of Rajshahi, and the pottery wheels of Dhamrai—to ensure that what reaches you is 100% authentic and ethically sourced.
+                </p>
+            </div>
+        </div>
+        <div class="relative">
+            <img src="{% static 'Images/artistic_hand.jpg'%}" alt="Weaving" class="story-image w-full h-[600px] object-cover">
+            <div class="absolute -bottom-6 -left-6 bg-white p-8 border-l-4 brand-color shadow-lg max-w-xs">
+                <p class="serif italic text-lg">"We weave not just with thread, but with the memories of our fathers."</p>
+                <p class="text-[10px] uppercase tracking-widest mt-4 font-bold text-stone-400">— Master Weaver, Tangail</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="heritage-cream-bg py-24 px-10 border-y border-stone-200">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="serif text-4xl mb-4">The GI Philosophy</h2>
+                <p class="text-stone-500 text-xs uppercase tracking-widest font-bold">Why local origins define global quality</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="philosophy-card">
+                    <div class="w-12 h-12 flex items-center justify-center brand-bg text-white mb-6">
+                        <span class="serif text-2xl">01</span>
+                    </div>
+                    <h3 class="serif text-2xl mb-4 brand-color">The Soil</h3>
+                    <p class="text-stone-500 text-sm leading-relaxed">
+                        A Geographical Indication is tied to the earth. The mineral-rich silt of the Padma gives the Ilish its fat; the humid air of Narayanganj allows the Jamdani thread to stay supple. Without the soil, there is no soul.
+                    </p>
+                </div>
+
+                <div class="philosophy-card">
+                    <div class="w-12 h-12 flex items-center justify-center brand-bg text-white mb-6">
+                        <span class="serif text-2xl">02</span>
+                    </div>
+                    <h3 class="serif text-2xl mb-4 brand-color">The Skill</h3>
+                    <p class="text-stone-500 text-sm leading-relaxed">
+                        Inherited mastery cannot be replicated by machines. Our artisans possess "muscle memory" passed down through seven generations, ensuring motifs and flavors that automated factories can never mimic.
+                    </p>
+                </div>
+
+                <div class="philosophy-card">
+                    <div class="w-12 h-12 flex items-center justify-center brand-bg text-white mb-6">
+                        <span class="serif text-2xl">03</span>
+                    </div>
+                    <h3 class="serif text-2xl mb-4 brand-color">The Shield</h3>
+                    <p class="text-stone-500 text-sm leading-relaxed">
+                        Your purchase acts as a protective shield. By choosing certified GI products, you prevent legal copyright theft of our national culture and ensure that artisan communities thrive economically for years to come.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="px-10 py-24 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="serif text-4xl mb-12">How We Verify</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
+                <div class="flex gap-6">
+                    <div class="brand-color text-2xl serif">01</div>
+                    <div>
+                        <h4 class="font-bold text-[11px] uppercase tracking-widest mb-2">On-Ground Inspection</h4>
+                        <p class="text-stone-500 text-xs leading-relaxed">We personally visit the production units to ensure they are within the GI-defined geographical boundary.</p>
+                    </div>
+                </div>
+                <div class="flex gap-6">
+                    <div class="brand-color text-2xl serif">02</div>
+                    <div>
+                        <h4 class="font-bold text-[11px] uppercase tracking-widest mb-2">Purity Certification</h4>
+                        <p class="text-stone-500 text-xs leading-relaxed">Every batch of food is tested for harmful additives, and textiles are checked for authentic yarn counts.</p>
+                    </div>
+                </div>
+                <div class="flex gap-6">
+                    <div class="brand-color text-2xl serif">03</div>
+                    <div>
+                        <h4 class="font-bold text-[11px] uppercase tracking-widest mb-2">Traceable Supply Chain</h4>
+                        <p class="text-stone-500 text-xs leading-relaxed">We use direct logistics to remove middlemen, ensuring the artisan receives the maximum profit share.</p>
+                    </div>
+                </div>
+                <div class="flex gap-6">
+                    <div class="brand-color text-2xl serif">04</div>
+                    <div>
+                        <h4 class="font-bold text-[11px] uppercase tracking-widest mb-2">UNESCO Alignment</h4>
+                        <p class="text-stone-500 text-xs leading-relaxed">We prioritize items recognized as Intangible Cultural Heritage, preserving them for future generations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="px-10 py-24 bg-white border-b border-stone-100">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="serif text-3xl mb-8">A Note from the Collective</h2>
+            <p class="italic text-stone-600 leading-relaxed mb-8">
+                "We didn't just want to build an e-commerce store. We wanted to build a digital museum where you could actually own the exhibits. Whether it's the silver shine of a Padma Ilish or the intricate thread-work of a Nakshi Kantha, these items are the fingerprints of our national identity."
+            </p>
+            <div class="serif text-xl brand-color">— The Somagom Team</div>
+        </div>
+    </section>
+
+    <section class="px-10 py-24">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="serif text-4xl mb-12 text-center">Our Core Pillars</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-stone-800 text-[10px] uppercase tracking-widest font-bold">
+                            <th class="py-4">Pillar</th>
+                            <th class="py-4">What it Means</th>
+                            <th class="py-4">Our Commitment</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-stone-600">
+                        <tr class="border-b border-stone-200">
+                            <td class="py-6 font-bold text-stone-900 uppercase tracking-tighter serif text-lg">Provenance</td>
+                            <td class="py-6 pr-6">Tracing every item back to its specific village and artisan family.</td>
+                            <td class="py-6 italic">No third-party middlemen or fake labels.</td>
+                        </tr>
+                        <tr class="border-b border-stone-200">
+                            <td class="py-6 font-bold text-stone-900 uppercase tracking-tighter serif text-lg">Purity</td>
+                            <td class="py-6 pr-6">Lab-testing food items for preservatives and textiles for fiber content.</td>
+                            <td class="py-6 italic">100% natural and safe materials.</td>
+                        </tr>
+                        <tr class="border-b border-stone-200">
+                            <td class="py-6 font-bold text-stone-900 uppercase tracking-tighter serif text-lg">Prosperity</td>
+                            <td class="py-6 pr-6">Ensuring 70% of the sale price goes directly back into the artisan communities.</td>
+                            <td class="py-6 italic">Empowering the rural economy.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 text-center bg-[#A33B26]/5">
+        <h2 class="serif text-3xl mb-6">Experience Authenticity</h2>
+        <div class="flex justify-center space-x-6">
+            <a href="{% url 'fashion'%}" class="brand-bg text-white px-8 py-3 text-[10px] uppercase font-bold tracking-widest">Shop Fashion</a>
+            <a href="{% url 'food'%}" class="border border-stone-800 px-8 py-3 text-[10px] uppercase font-bold tracking-widest hover:brand-bg hover:text-white transition">Shop GI Food</a>
+            <a href="{% url 'craft'%}" class="brand-bg text-white px-8 py-3 text-[10px] uppercase font-bold tracking-widest">Shop Craft</a>
+        </div>
+    </section>
+
+    <footer class="bg-stone-900 text-white py-16 px-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div>
+                <div class="logo-box border-white text-white mb-6 uppercase tracking-tighter serif">SOMAGOM</div>
+                <p class="text-xs text-stone-400 leading-relaxed uppercase tracking-widest">Preserving heritage through equitable commerce.</p>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Collection</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                    
+                    <li><a href="{% url 'food'%}" class="hover:text-white transition">Heritage Food</a></li>
+                    <li><a href="{%url 'fashion'%}" class="hover:text-white transition">Fashion Hub</a></li>
+                    <li><a href="{%url 'craft'%}" class="hover:text-white transition">GI Crafts</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Support</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                    <li>Authenticity Policy</li>
+                    <li>Shipping Info</li>
+                    <li>Producer Sign-up</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Newsletter</h4>
+                <input type="email" placeholder="YOUR EMAIL" class="bg-transparent border-b border-stone-700 w-full py-2 text-[10px] focus:outline-none">
+            </div>
+        </div>
+        <div class="pt-12 border-t border-stone-800 text-center">
+            <p class="text-[9px] uppercase tracking-[0.5em] text-stone-500">© 2025 SOMAGOM — AUTHENTICITY GUARANTEED</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+        
+        const openBtn = document.getElementById('open-menu');
+        const closeBtn = document.getElementById('close-menu');
+        const menu = document.getElementById('mobile-menu');
+
+        openBtn.addEventListener('click', () => {
+            menu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            menu.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+    </script>
+
+</body>
+</html>

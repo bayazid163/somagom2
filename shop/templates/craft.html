@@ -1,0 +1,360 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GI Crafts | Somagom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Public+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --heritage-red: #A33B26;
+            --clay-white: #F9F7F2;
+            --ink-black: #2A2420;
+            --craft-gold: #B8860B;
+        }
+        body { 
+            font-family: 'Public Sans', sans-serif; 
+            background-color: var(--clay-white); 
+            color: var(--ink-black); 
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+        .serif { font-family: 'Marcellus', serif; }
+        .brand-color { color: var(--heritage-red); }
+        .brand-bg { background-color: var(--heritage-red); }
+
+        .logo-box {
+            border: 2px solid var(--heritage-red);
+            padding: 4px 12px;
+            display: inline-block;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .craft-card {
+            background: #ffffff;
+            border: 1px solid rgba(163, 59, 38, 0.1);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .craft-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(163, 59, 38, 0.08);
+            border-color: var(--heritage-red);
+        }
+
+        .status-badge {
+            font-size: 8px;
+            font-weight: 800;
+            padding: 4px 8px;
+            letter-spacing: 1px;
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
+        .gi-badge { background: #E8F5E9; color: #2E7D32; }
+        .heritage-badge { background: #E3F2FD; color: #1565C0; }
+        #mobile-menu {
+            display: none;
+            transition: all 0.3s ease;
+        }
+        #mobile-menu.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div id="mobile-menu" class="fixed inset-0 z-[100] bg-[#F9F7F2] p-10 flex flex-col space-y-8 text-2xl serif">
+        <button id="close-menu" class="absolute top-8 right-10 text-stone-500 text-4xl">✕</button>
+    
+        <a href="{% url ''%}" >Home</a>
+        <a href="{% url 'fashion'%}">Fashion</a>
+        <a href="{% url 'food'%}">GI Food</a>
+        <a href="{%url 'craft'%}" class="brand-color" >Crafts</a>
+        <a href="{%url 'about'%}">Our Story</a>
+        <hr class="border-stone-200">
+        <a href="login" class="text-sm uppercase tracking-widest font-bold">Login / Account</a>
+    </div>
+
+    <nav class="flex justify-between items-center px-6 md:px-10 py-6 sticky top-0 z-50 bg-[#F9F7F2]/95 backdrop-blur-md border-b border-stone-200">
+        <div class="logo-box brand-color">
+            <div class="text-xl serif tracking-tighter">SOMAGOM</div>
+        </div>
+        
+        <div class="hidden md:flex space-x-8 text-[11px] uppercase tracking-widest font-bold text-stone-500">
+        
+            <a href="{%url ''%}" >Home</a>
+            <a href="{% url 'fashion'%}" class="hover:brand-color transition">Fashion</a>
+            <a href="{% url 'food'%}" class="hover:brand-color transition">GI Food</a>
+            <a href="{%url 'craft'%}" class="brand-color" class="hover:brand-color transition">Crafts</a>
+            <a href="{%url 'about'%}" class="hover:brand-color transition">Our Story</a>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <a href="login" class="hidden md:block brand-bg px-6 py-2 text-xs uppercase font-bold text-white hover:opacity-90 transition">Login</a>
+            <button id="open-menu" class="md:hidden text-stone-800 p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <header class="px-10 py-20 text-center">
+        <span class="brand-color text-xs uppercase tracking-[0.4em] mb-4 block">Handmade in Bangladesh</span>
+        <h1 class="text-5xl md:text-7xl serif mb-6">Artisanal <span class="italic font-light">Crafts</span></h1>
+        <p class="max-w-2xl mx-auto text-stone-500 text-sm leading-relaxed italic">
+            "Preserving the soul of rural artistry through authentic, Geographical Indication (GI) certified handiwork."
+        </p>
+    </header>
+
+    <main class="px-10 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-10">
+            
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/shataranji.png'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Jessore</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge gi-badge">✓ GI Status</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Textile Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Jessore Shotoronji</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Traditional hand-woven floor mats featuring rhythmic patterns and organic dyes.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 3,500 – 35,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/nakshi_katha.jpg'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Mymensingh, Jessore</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge gi-badge">✓ GI Status</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Textile Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Nakshi Kantha</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Hand-embroidered quilts telling stories of rural life through every stitch.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 3,000 – 50,000+</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/shital_pati.jpg'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Sylhet</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge gi-badge">✓ GI Status</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Cane Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Shital Pati</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Cool-feeling mats hand-woven from Murta cane, recognized by UNESCO.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 2,500 – 20,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/pottery.jpg'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Dhamrai</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge heritage-badge">Local Heritage</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Clay Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Heritage Pottery</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Terracotta and glazed clay work crafted using ancient wood-fired kilns.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 300 – 5,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/bamboo_craft.jpeg'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Sylhet, CHT</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge heritage-badge">Local Heritage</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Utility Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Bamboo & Cane Crafts</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Sustainable utility items, from baskets to sophisticated home decor.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 500 – 25,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/metal_craft.png'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Dhamrai</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge heritage-badge">Local Heritage</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Metal Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Brass & Bell Metal</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Lost-wax casting method used to create royal tableware and statues.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 2,000 – 40,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/wood_craving.jpg'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Dinajpur</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge heritage-badge">Local Heritage</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Wood Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Dinajpur Wood Carving</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Intricate relief carving on seasoned wood, traditionally used for heavy doors.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 1,500 – 60,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/jute_craft.jpg'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Faridpur</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge heritage-badge">Local Heritage</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Eco Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Jute Handicrafts</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Biodegradable high-fashion bags and home textiles from the 'Golden Fiber'.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 300 – 8,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="craft-card">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{% static 'Images/trival_jewallary.jpg'%}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">Hill Tracts</div>
+                </div>
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="status-badge heritage-badge">Local Heritage</span>
+                        <span class="brand-color font-bold italic serif text-[11px]">Ethnic Craft</span>
+                    </div>
+                    <h3 class="text-2xl serif mb-3">Tribal Handicrafts</h3>
+                    <p class="text-stone-500 text-xs leading-relaxed flex-grow">Traditional jewelry and ornaments reflecting the diverse ethnic groups of CHT.</p>
+                    <div class="pt-6 border-t border-stone-100 flex justify-between items-center">
+                        <span class="text-lg font-light">৳ 800 – 20,000</span>
+                        <button class="brand-color text-[10px] font-bold uppercase tracking-widest hover:underline">View</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <section class="mx-10 my-20 bg-stone-100 p-12 flex flex-col md:flex-row items-center gap-12 border border-stone-200">
+    <div class="md:w-1/3">
+        <img src="{% static 'Images/craft_story.jpg'%}" class="w-full grayscale rounded-sm shadow-xl">
+    </div>
+    <div class="md:w-2/3">
+        <span class="brand-color text-xs uppercase tracking-[0.3em] font-bold">Artisan Spotlight</span>
+        <h2 class="text-4xl serif mt-2 mb-6">The Hands Behind the Craft</h2>
+        <p class="text-stone-600 leading-relaxed mb-6 italic">
+            From Jessore’s Shotoronji looms to Sylhet’s Shital Pati mats and Dhamrai’s clay workshops, every craft is shaped by skilled hands and inherited knowledge passed down through generations. By choosing Somagom, you directly support artisans who preserve Bangladesh’s living heritage.
+        </p>
+        <button class="brand-bg text-white px-8 py-3 text-[10px] uppercase font-bold tracking-widest">
+            Read Their Stories
+        </button>
+    </div>
+</section>
+
+
+    <footer class="bg-stone-900 text-white py-16 px-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div>
+                <div class="logo-box border-white text-white mb-6 uppercase tracking-tighter serif">SOMAGOM</div>
+                <p class="text-xs text-stone-400 leading-relaxed uppercase tracking-widest">Preserving heritage through equitable commerce.</p>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Collection</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                
+                    <li><a href="{% url 'food'%}" class="hover:text-white transition">Heritage Food</a></li>
+                    <li><a href="{%url 'fashion'%}" class="hover:text-white transition">Fashion Hub</a></li>
+                    <li><a href="{%url 'craft'%}" class="hover:text-white transition">GI Crafts</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Support</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                    <li>Authenticity Policy</li>
+                    <li>Shipping Info</li>
+                    <li>Producer Sign-up</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Newsletter</h4>
+                <input type="email" placeholder="YOUR EMAIL" class="bg-transparent border-b border-stone-700 w-full py-2 text-[10px] focus:outline-none">
+            </div>
+        </div>
+        <div class="pt-12 border-t border-stone-800 text-center">
+            <p class="text-[9px] uppercase tracking-[0.5em] text-stone-500">© 2025 SOMAGOM — AUTHENTICITY GUARANTEED</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+        
+        const openBtn = document.getElementById('open-menu');
+        const closeBtn = document.getElementById('close-menu');
+        const menu = document.getElementById('mobile-menu');
+
+        openBtn.addEventListener('click', () => {
+            menu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            menu.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+    </script>
+
+</body>
+</html>

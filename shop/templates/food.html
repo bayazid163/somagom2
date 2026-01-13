@@ -1,0 +1,480 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GI Food Collection | Somagom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Public+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --heritage-red: #A33B26;
+            --clay-white: #F9F7F2;
+            --ink-black: #2A2420;
+        }
+        body { 
+            font-family: 'Public Sans', sans-serif; 
+            background-color: var(--clay-white); 
+            color: var(--ink-black); 
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+        .serif { font-family: 'Marcellus', serif; }
+        .brand-color { color: var(--heritage-red); }
+        .brand-bg { background-color: var(--heritage-red); }
+
+        .logo-box {
+            border: 2px solid var(--heritage-red);
+            padding: 4px 12px;
+            display: inline-block;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .cat-header {
+            border-left: 4px solid var(--heritage-red);
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+            margin-top: 3rem;
+        }
+
+        .food-card {
+            background: #ffffff;
+            border: 1px solid rgba(163, 59, 38, 0.1);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            height: 100%;
+        }
+        .food-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(163, 59, 38, 0.08);
+            border-color: var(--heritage-red);
+        }
+
+        .lab-badge {
+            background: #E8F5E9;
+            color: #2E7D32;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 4px 8px;
+            letter-spacing: 1px;
+            border-radius: 2px;
+        }
+        #mobile-menu {
+            display: none;
+            transition: all 0.3s ease;
+        }
+        #mobile-menu.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div id="mobile-menu" class="fixed inset-0 z-[100] bg-[#F9F7F2] p-10 flex flex-col space-y-8 text-2xl serif">
+        <button id="close-menu" class="absolute top-8 right-10 text-stone-500 text-4xl">✕</button>
+        
+        <a href="{% url ''%}">Home</a>
+        <a href="{% url 'fashion'%}">Fashion</a>
+        <a href="{% url 'food'%}" class="brand-color">GI Food</a>
+        <a href="{%url 'craft'%}">Crafts</a>
+        <a href="{%url 'about'%}">Our Story</a>
+        <hr class="border-stone-200">
+        {% if user.is_authenticated %}
+            <button type="button" onclick="confirmLogout()" class="text-left text-sm uppercase tracking-widest font-bold text-red-600">
+                Logout ({{ user.username }})
+            </button>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-sm uppercase tracking-widest font-bold">Login / Account</a>
+        {% endif %}
+    </div>
+
+    <nav class="flex justify-between items-center px-6 md:px-10 py-6 sticky top-0 z-50 bg-[#F9F7F2]/95 backdrop-blur-md border-b border-stone-200">
+        <div class="logo-box brand-color">
+            <div class="text-xl serif tracking-tighter">SOMAGOM</div>
+        </div>
+        
+        <div class="hidden md:flex space-x-8 text-[11px] uppercase tracking-widest font-bold text-stone-500">
+        
+            <a href="{%url ''%}" >Home</a>
+            <a href="{% url 'fashion'%}" class="hover:brand-color transition">Fashion</a>
+            <a href="{% url 'food'%}" class="brand-color" class="hover:brand-color transition">GI Food</a>
+            <a href="{%url 'craft'%}" class="hover:brand-color transition">Crafts</a>
+            <a href="{%url 'about'%}" class="hover:brand-color transition">Our Story</a>
+        </div>
+        <div class="flex items-center space-x-3">
+
+            <a href="{% url 'cart' %}" class="relative inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {{ cart.items.count|default:0 }}
+                </span>
+            </a>
+        </div>
+
+        <div class="flex items-center space-x-4">
+        {% if user.is_authenticated %}
+            <form action="{% url 'rest_logout' %}" method="post" class="inline">
+                {% csrf_token %}
+                <button type="button" onclick="confirmLogout()" class="text-xs uppercase font-bold text-stone-500">
+                    Logout
+                </button>
+            </form>
+        
+            <span class="text-[10px] uppercase tracking-widest font-bold brand-color">
+                Hi, {{ user.username }}
+            </span>
+        {% else %}
+                <a href="{% url 'login'%}" class="hidden md:block brand-bg px-6 py-2 text-xs uppercase font-bold text-white hover:opacity-90 transition">Login</a>
+                <button id="open-menu" class="md:hidden text-stone-800 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+        {% endif %}
+        </div>
+    </nav>
+
+    <header class="px-10 py-20 text-center row">
+        <span class="brand-color text-xs uppercase tracking-[0.4em] mb-4 block">The Taste of Tradition</span>
+        <h1 class="text-5xl md:text-7xl serif mb-6">GI <span class="italic font-light">Food Gallery</span></h1>
+        <p class="max-w-2xl mx-auto text-stone-500 text-sm leading-relaxed italic">
+            "Authentic flavors from the specific regions of Bangladesh, verified for purity and traditional preparation methods."
+        </p>
+    </header>
+
+    <main class="px-10 py-6">
+        <div class="cat-header">
+            <h2 class="text-3xl serif">Short Shelf-Life <span class="text-sm font-sans font-light text-stone-400 ml-2">(3–5 Days)</span></h2>
+            <p class="text-xs text-stone-500 uppercase tracking-widest font-semibold">Requires Refrigerated Storage & Quick Delivery</p>
+        </div>
+    
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                {%for p in food %}
+    
+        
+                    <div class="food-card flex flex-col">
+                        <div class="food-card">
+                            <div class="relative h-60 overflow-hidden">
+                                <img src="{{p.images.url}}" class="w-full h-full object-cover">
+                                <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">{{p.origin}}</div>
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="lab-badge">✓ {{p.authenticity}}</span>
+                                    <span class="brand-color font-bold italic serif text-[10px]">{{p.status}}</span>
+                                </div>
+                                <h3 class="serif text-xl mb-2">{{p.product_name}}</h3>
+                                <p class="text-stone-500 text-xs flex-grow">{{p.description}}</p>
+                                <div class="pt-4 mt-4 border-t border-stone-100 flex justify-between items-center">
+                                    <span class="font-bold">৳ {{p.price}} {{p.quantity}}</span>
+                                    
+                                    <button 
+                                         onclick="addToCart('{{p.id}}')" 
+                                        class="brand-color text-[10px] font-bold uppercase tracking-widest hover:opacity-70 transition">
+                                            Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {%endfor%}
+            </div>
+    </main>
+
+    
+
+
+        
+
+    <main class="px-10 py-6">
+        <div class="cat-header">
+            <h2 class="text-3xl serif">Ultra-Perishable <span class="text-sm font-sans font-light text-stone-400 ml-2">(Within 24 Hours)</span></h2>
+            <p class="text-xs text-stone-500 uppercase tracking-widest font-semibold text-red-600">Same-Day Delivery Only</p>
+        </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                {%for p in food1 %}
+    
+        
+                    <div class="food-card flex flex-col">
+                        <div class="food-card">
+                            <div class="relative h-60 overflow-hidden">
+                                <img src="{{p.images.url}}" class="w-full h-full object-cover">
+                                <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">{{p.origin}}</div>
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="lab-badge">✓ {{p.authenticity}}</span>
+                                    <span class="brand-color font-bold italic serif text-[10px]">{{p.status}}</span>
+                                </div>
+                                <h3 class="serif text-xl mb-2">{{p.product_name}}</h3>
+                                <p class="text-stone-500 text-xs flex-grow">{{p.description}}</p>
+                                <div class="pt-4 mt-4 border-t border-stone-100 flex justify-between items-center">
+                                    <span class="font-bold">৳ {{p.price}} {{p.quantity}}</span>
+                                    
+                                    <button 
+                                         onclick="addToCart('{{p.id}}')" 
+                                        class="brand-color text-[10px] font-bold uppercase tracking-widest hover:opacity-70 transition">
+                                            Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {%endfor%}
+            </div>
+        
+        
+            
+
+           
+
+            
+    </main>
+
+    <main class="px-10 py-6">
+        <div class="cat-header">
+            <h2 class="text-3xl serif">Fresh Produce <span class="text-sm font-sans font-light text-stone-400 ml-2">(GI Fruits & Fish)</span></h2>
+            <p class="text-xs text-stone-500 uppercase tracking-widest font-semibold">Cold-Chain Required</p>
+        </div>
+        
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            
+                {%for p in food2 %}
+    
+        
+                    <div class="food-card flex flex-col">
+                        <div class="food-card">
+                            <div class="relative h-60 overflow-hidden">
+                                <img src="{{p.images.url}}" class="w-full h-full object-cover">
+                                <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">{{p.origin}}</div>
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="lab-badge">✓ {{p.authenticity}}</span>
+                                    <span class="brand-color font-bold italic serif text-[10px]">{{p.status}}</span>
+                                </div>
+                                <h3 class="serif text-xl mb-2">{{p.product_name}}</h3>
+                                <p class="text-stone-500 text-xs flex-grow">{{p.description}}</p>
+                                <div class="pt-4 mt-4 border-t border-stone-100 flex justify-between items-center">
+                                    <span class="font-bold">৳ {{p.price}} {{p.quantity}}</span>
+                                    
+                                    <button 
+                                         onclick="addToCart('{{p.id}}')" 
+                                        class="brand-color text-[10px] font-bold uppercase tracking-widest hover:opacity-70 transition">
+                                            Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {%endfor%}
+            </div>
+    </main>
+
+    <main class="px-10 py-6 mb-20">
+        <div class="cat-header">
+            <h2 class="text-3xl serif">Long Shelf-Life <span class="text-sm font-sans font-light text-stone-400 ml-2">(7–30 Days)</span></h2>
+            <p class="text-xs text-stone-500 uppercase tracking-widest font-semibold text-green-700">Suitable for International Shipping</p>
+        </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                {%for p in food3 %}
+    
+        
+                    <div class="food-card flex flex-col">
+                        <div class="food-card">
+                            <div class="relative h-60 overflow-hidden">
+                                <img src="{{p.images.url}}" class="w-full h-full object-cover">
+                                <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase">{{p.origin}}</div>
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="lab-badge">✓ {{p.authenticity}}</span>
+                                    <span class="brand-color font-bold italic serif text-[10px]">{{p.status}}</span>
+                                </div>
+                                <h3 class="serif text-xl mb-2">{{p.product_name}}</h3>
+                                <p class="text-stone-500 text-xs flex-grow">{{p.description}}</p>
+                                <div class="pt-4 mt-4 border-t border-stone-100 flex justify-between items-center">
+                                    <span class="font-bold">৳ {{p.price}} {{p.quantity}}</span>
+                                    
+                                    <button 
+                                         onclick="addToCart('{{p.id}}')" 
+                                        class="brand-color text-[10px] font-bold uppercase tracking-widest hover:opacity-70 transition">
+                                            Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {%endfor%}
+            </div>
+        
+        
+    </main>
+
+    <section class="mx-10 my-20 bg-stone-200/30 p-12 border border-stone-200">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl serif mb-6">Your Safety is Our <span class="brand-color">Heritage</span></h2>
+            <p class="text-stone-600 text-sm leading-loose">
+                We eliminate fake products by connecting you directly to the original sweetsmiths (Moyras) and artisans. Every product is lab-tested and certified.
+            </p>
+            <div class="flex flex-wrap justify-center gap-10">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">🔬</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Lab Verified</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">📦</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Vacuum Sealed</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">🌍</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Global Express</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-stone-900 text-white py-16 px-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div>
+                <div class="logo-box border-white text-white mb-6 uppercase tracking-tighter serif">SOMAGOM</div>
+                <p class="text-xs text-stone-400 leading-relaxed uppercase tracking-widest">Preserving heritage through equitable commerce.</p>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Collection</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                
+                    <li><a href="{% url 'food'%}" class="hover:text-white transition">Heritage Food</a></li>
+                    <li><a href="{%url 'fashion'%}" class="hover:text-white transition">Fashion Hub</a></li>
+                    <li><a href="{%url 'craft'%}" class="hover:text-white transition">GI Crafts</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Support</h4>
+                <ul class="text-xs space-y-4 text-stone-400 uppercase tracking-widest">
+                    <li>Authenticity Policy</li>
+                    <li>Shipping Info</li>
+                    <li>Producer Sign-up</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="serif text-lg mb-6">Newsletter</h4>
+                <input type="email" placeholder="YOUR EMAIL" class="bg-transparent border-b border-stone-700 w-full py-2 text-[10px] focus:outline-none">
+            </div>
+        </div>
+        <div class="pt-12 border-t border-stone-800 text-center">
+            <p class="text-[9px] uppercase tracking-[0.5em] text-stone-500">© 2025 SOMAGOM — AUTHENTICITY GUARANTEED</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+
+    
+function addToCart(productId) {
+    
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]') ? 
+                      document.querySelector('[name=csrfmiddlewaretoken]').value : 
+                      getCookie('csrftoken');
+    
+
+    fetch(`/cart/add/${productId}/`, { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+    })
+    .then(response => {
+        if (response.status === 401 || response.status === 403) {
+
+            if(!confirm("please login first to add items to your cart.")){
+                return;
+            }
+            else{
+            //alert("Please login first!");
+            window.location.href = "{% url 'login' %}";
+            return;}
+        }
+        return response.json();
+    })
+    .then(data => {
+
+        const countBadge = document.getElementById('cart-count');
+        countBadge.innerText = data.total_items;
+
+        countBadge.classList.add('scale-125');
+        setTimeout(() => countBadge.classList.remove('scale-125'), 200);
+        if (data) {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+        lucide.createIcons();
+        
+        const openBtn = document.getElementById('open-menu');
+        const closeBtn = document.getElementById('close-menu');
+        const menu = document.getElementById('mobile-menu');
+
+        openBtn.addEventListener('click', () => {
+            menu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            menu.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+    
+        function confirmLogout() {
+            const csrftoken = getCookie('csrftoken');
+
+
+            if (!confirm("Are you sure you want to logout?")) {
+            return;
+        }
+            fetch('/api/v1/dj-rest-auth/logout/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                }
+                else {
+                alert("Logout failed. Please try again.");
+            }
+            })
+            .catch(error => console.error('Logout failed:', error));
+        }
+
+
+
+
+
+    </script>
+
+</body>
+</html>
